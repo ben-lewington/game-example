@@ -1,0 +1,5 @@
+name: "zig-alpine"
+description: "alpine image with zig installed"
+runs:
+  using: "docker"
+  image: "Containerfile"

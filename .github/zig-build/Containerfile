@@ -1,0 +1,19 @@
+FROM alpine:3.16 AS base
+
+WORKDIR /root
+
+ARG ZIG_VERSION=0.13.0
+ARG ZIG_URL=https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz
+
+# FIXME: verify SHA256 for release
+RUN set -ex && \
+    apk add --virtual .tmp curl tar xz && \
+    curl -s -o zig.tar.xz "$ZIG_URL" && \
+    mkdir -p /usr/local/bin/zig && \
+    tar -Jxf zig.tar.xz -C /usr/local/bin/zig --strip-components=1 && \
+    rm zig.tar.xz && \
+    apk del .tmp
+
+ENV PATH="/usr/local/bin/zig:${PATH}"
+
+ENTRYPOINT [ "/usr/local/bin/zig" ]
