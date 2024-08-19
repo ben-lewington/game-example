@@ -1,6 +1,7 @@
 let ctx, engine;
 
 let state;
+let mem;
 
 const cursorPosX = 0;
 const cursorPosY = 4;
@@ -8,6 +9,23 @@ const blockPosX = 8;
 const blockPosY = 12;
 const blockVelX = 16;
 const blockVelY = 20;
+
+const wasmObjectOffsetTable = (var_name) => {
+    let ret = {};
+    const obj_meta_len = mem.getInt32(engine[var_name + "_meta_len"], true);
+
+    obj_meta = new DataView(engine.memory.buffer, engine[var_name + "_meta"], obj_meta_len);
+    const field_count = obj_meta.getInt32(0, true);
+    for (let i = 0; i < field_count; i++) {
+        const ptr = obj_meta.getInt32((1 + i + field_count * 0) * 4, true);
+        const len = obj_meta.getInt32((1 + i + field_count * 1) * 4, true);
+        const offset = obj_meta.getInt32((1 + i + field_count * 2) * 4, true);
+
+        const field_name = new TextDecoder().decode(new Uint8Array(engine.memory.buffer, ptr, len));
+        ret[field_name] = offset;
+    }
+    return ret;
+}
 
 window.onload = async () => {
     engine = await WebAssembly
@@ -19,6 +37,8 @@ window.onload = async () => {
             }
         } })
         .then((mod) => mod.instance.exports);
+
+    mem = new DataView(engine.memory.buffer);
 
     state = new DataView(engine.memory.buffer, engine.state, 24);
 
@@ -37,6 +57,8 @@ window.onload = async () => {
         state.setFloat32(cursorPosX, evt.clientX - rect.left, true);
         state.setFloat32(cursorPosY, evt.clientY - rect.top, true);
     });
+
+    console.log(wasmObjectOffsetTable("state"));
 
     window.requestAnimationFrame(initGame);
 }

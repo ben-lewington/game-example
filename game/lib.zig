@@ -1,5 +1,5 @@
 const std = @import("std");
-const testing = std.testing;
+const meta = @import("meta.zig");
 
 const Vec = extern struct {
     x: f32,
@@ -33,4 +33,7 @@ const globals = struct {
             .vel = .{ .x = 0, .y = 0 },
         },
     };
+
+    export const state_meta = meta.FieldMeta.fromStruct(State);
+    export const state_meta_len: usize = @sizeOf(@TypeOf(state_meta));
 };
