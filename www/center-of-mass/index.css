@@ -1,0 +1,12 @@
+body {
+    display: flex;
+    flex-direction: column;
+
+    ol {
+        list-style-type: decimal-leading-zero;
+    }
+}
+
+#canvas {
+    border: black solid 1px;
+}
