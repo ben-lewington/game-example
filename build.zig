@@ -35,11 +35,9 @@ pub fn buildWasmModule(
 }
 
 pub fn build(b: *std.Build) void {
-    const lib = buildWasmModule(b, "game", b.path("game/lib.zig"), .{});
+    const lib = buildWasmModule(b, "engine", b.path("engine/lib.zig"), .{});
 
-    const install = b.addInstallArtifact(lib, .{
-        .dest_dir = .{ .override = .{ .custom = "../www" } },
-    });
+    const install = b.addInstallArtifact(lib, .{ .dest_dir = .{ .override = .{ .custom = "../www" } } });
 
     b.getInstallStep().dependOn(&install.step);
 }
