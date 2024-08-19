@@ -10,8 +10,7 @@ const blockVelX = 16;
 const blockVelY = 20;
 
 window.onload = async () => {
-    engine = await WebAssembly
-        .instantiateStreaming(fetch("game.wasm"), { env: {
+    engine = await WebAssembly.instantiateStreaming(fetch("engine.wasm"), { env: {
             logStr: (ptr, len) => {
                 arr = new Uint8Array(engine.memory.buffer, ptr, len);
                 const str = new TextDecoder().decode(arr);
@@ -30,12 +29,27 @@ window.onload = async () => {
 
     ctx = canvas.getContext("2d");
 
-
-    canvas.addEventListener("mousemove", (evt) => {
+    const setCursorPos = (x, y) => {
         // const rect = console.log(evt);
         const rect = ctx.canvas.getBoundingClientRect();
-        state.setFloat32(cursorPosX, evt.clientX - rect.left, true);
-        state.setFloat32(cursorPosY, evt.clientY - rect.top, true);
+        state.setFloat32(cursorPosX, x - rect.left, true);
+        state.setFloat32(cursorPosY, y - rect.top, true);
+    }
+
+    canvas.addEventListener("mousemove", (evt) => {
+        setCursorPos(evt.clientX, evt.clientY);
+    });
+    canvas.addEventListener("touchmove", (evt) => {
+        let pos = {
+            x: 0,
+            y: 0,
+        }
+        const l = evt.touches.length;
+        for (let t of evt.touches) {
+            pos.x += t.clientX / l;
+            pos.y += t.clientY / l;
+        }
+        setCursorPos(pos.x, pos.y);
     });
 
     window.requestAnimationFrame(initGame);
