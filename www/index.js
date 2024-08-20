@@ -11,13 +11,12 @@ const blockVelY = 20;
 
 window.onload = async () => {
     engine = await WebAssembly.instantiateStreaming(fetch("engine.wasm"), { env: {
-            logStr: (ptr, len) => {
-                arr = new Uint8Array(engine.memory.buffer, ptr, len);
-                const str = new TextDecoder().decode(arr);
-                console.log(str);
-            }
-        } })
-        .then((mod) => mod.instance.exports);
+        logStr: (ptr, len) => {
+            arr = new Uint8Array(engine.memory.buffer, ptr, len);
+            const str = new TextDecoder().decode(arr);
+            console.log(str);
+        }
+    } }).then((mod) => mod.instance.exports);
 
     state = new DataView(engine.memory.buffer, engine.state, 24);
 

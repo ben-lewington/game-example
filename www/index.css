@@ -5,4 +5,5 @@ body {
 
 #canvas {
     border: black solid 1px;
+    touch-action: none;
 }
